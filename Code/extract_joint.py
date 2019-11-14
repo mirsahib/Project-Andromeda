@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-Spyder Editor
 
-This is a temporary script file.
+"""
+Name: Extract Joint
+Description: Extract joint coordinated from MSR Action 3d Dataset
+Author: Mir Sahib
 """
 import numpy as np
 import pandas as pd
@@ -11,12 +11,12 @@ from os import listdir
 from os.path import isfile, join
 
 def extractJoint():
-    mypath = r'C:\Users\Mir Sahib\Downloads\MSRAction3DSkeleton(20joints)'
-    filename = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    mypath = r'C:\Users\Mir Sahib\Downloads\MSRAction3DSkeleton(20joints)' # change this with your system path
+    filename = [f for f in listdir(mypath) if isfile(join(mypath, f))] # load all file name from dataset directory
     for i in range(0,len(filename)):
-        content = np.loadtxt(filename[i])
-        l = int(content.shape[0]/20)
-        matrix = np.reshape(content,(20,l,4),order = "F")
+        content = np.loadtxt(filename[i])#load file content
+        l = int(content.shape[0]/20) # store frame rate
+        matrix = np.reshape(content,(20,l,4),order = "F") # reshape dataset (20: joint, l: frame rate,4: xyz coordinated and confidence score )
         X = matrix[:,:,0]
         Y = matrix[:,:,1]
         Z = 400 - matrix[:,:,2]
@@ -73,7 +73,7 @@ def extractJoint():
                            'right_foot_X':right_foot[:,0],'right_foot_Y':right_foot[:,1],'right_foot_Z':right_foot[:,2]
                            })
         
-        root = r"C:\Users\Mir Sahib\Downloads\MSRSkeletonExtracted"
+        root = r"C:\Users\Mir Sahib\Downloads\MSRSkeletonExtracted" #change this with you desired system path
         newfilename = filename[i].split(".")
         final_path = os.path.join(root,newfilename[0]+".csv")
         df.to_csv(final_path,index=False)

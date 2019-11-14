@@ -7,9 +7,9 @@ import re
 fileName = os.listdir()
 l = len(fileName)
 for k in range(0,len(fileName)):
-    label =int( re.findall(r'\d+', fileName[k])[0])
-    content = np.loadtxt(fileName[k])
-    matrix = np.reshape(content,(20,int(content.shape[0]/20),4),order = "F")
+    label =int( re.findall(r'\d+', fileName[k])[0]) #extract label from file name
+    content = np.loadtxt(fileName[k])# store content of the file
+    matrix = np.reshape(content,(20,int(content.shape[0]/20),4),order = "F") #reshape content in (20 joint,frame rate,xyz coordinate with confidence 													score)
         
     X = matrix[:,:,0]
     Y = matrix[:,:,1]
@@ -56,31 +56,31 @@ for k in range(0,len(fileName)):
     C5 = ((right_knee+right_ankle+right_foot)/3)-right_hip # barycenter for right leg
     
     #1st level feature
-    col = C1.shape[1]
-    human_matrix = np.array([C1,C2,C3,C4,C5])
-    new_human_matrix = np.empty([5,3,col])
-    label_vector = np.full([5,1],label)
+    col = C1.shape[1] 
+    human_matrix = np.array([C1,C2,C3,C4,C5]) #storing barycenter in one matrix
+    new_human_matrix = np.empty([5,3,col])#initializing new human matrix
+    label_vector = np.full([5,1],label)# initialing labal vector
     print("new_human_matrix")
     for i in range(0,5):
-        parts = human_matrix[i,:,:]
+        parts = human_matrix[i,:,:]#store ith barycenter
         x = parts[0,:]
         y = parts[1,:]
         z = parts[2,:]
         for j in range(0,col):
-            x[j] = LA.norm(x[j]-x[0])
-            y[j] = LA.norm(y[j]-y[0])
-            z[j] = LA.norm(z[j]-z[0])
-        new_human_matrix[i,0,:] = x
-        new_human_matrix[i,1,:] = y
-        new_human_matrix[i,2,:] = z
+            x[j] = LA.norm(x[j]-x[0]) 	#  norm(x axis-jth frame - x axis 0th value) (norm means euclidean distance)
+            y[j] = LA.norm(y[j]-y[0])	#  norm(y axis-jth frame - y axis 0th value) (norm means euclidean distance)
+            z[j] = LA.norm(z[j]-z[0])	#  norm(z axis-jth frame - z axis 0th value) (norm means euclidean distance)
+        new_human_matrix[i,0,:] = x	#store x axis norm
+        new_human_matrix[i,1,:] = y	#store y axis norm
+        new_human_matrix[i,2,:] = z	#store z axis norm
     
-    feature_matrix = np.empty([5,4,3])
+    feature_matrix = np.empty([5,4,3])#initialize first feature matrix
     for i in range(0,5):
-        feature_matrix[i,0,:] = np.amax(new_human_matrix[i,:,1:col],axis=1)- np.amin(new_human_matrix[0,:,1:col],axis=1)#range
-        feature_matrix[i,1,:] = np.mean(new_human_matrix[i,:,1:col],axis=1)#mean
-        feature_matrix[i,2,:] = np.var(new_human_matrix[i,:,1:col],axis=1)#variance
-        feature_matrix[i,3,:] = skew(new_human_matrix[i,:,1:col],axis=1)#skewness
-    
+        feature_matrix[i,0,:] = np.amax(new_human_matrix[i,:,1:col],axis=1)- np.amin(new_human_matrix[0,:,1:col],axis=1)#range columnwise
+        feature_matrix[i,1,:] = np.mean(new_human_matrix[i,:,1:col],axis=1)#mean columnwise
+        feature_matrix[i,2,:] = np.var(new_human_matrix[i,:,1:col],axis=1)#variance columnwise
+        feature_matrix[i,3,:] = skew(new_human_matrix[i,:,1:col],axis=1)#skewness columnwise
+    #creating dataframe
     df_range = pd.DataFrame(feature_matrix[:,0,:],columns = ["RangeX","RangeY","RangeZ"])
     df_mean = pd.DataFrame(feature_matrix[:,1,:],columns = ["MeanX","MeanY","MeanZ"])
     df_variance = pd.DataFrame(feature_matrix[:,2,:],columns = ["VarX","VarY","VarZ"])
@@ -88,7 +88,7 @@ for k in range(0,len(fileName)):
     df_label = pd.DataFrame(label_vector,columns=["Label"])
     df = pd.concat([df_range,df_mean,df_variance,df_skew,df_label],axis=1)
     
-    folder = r'/home/mirsahib/Downloads/OneDrive_1_29-10-2019/1st_Level_Feature_Extracted'
+    folder = r'/home/mirsahib/Downloads/OneDrive_1_29-10-2019/1st_Level_Feature_Extracted' #change this with your system path
     newFileName = fileName[k].split(".")
     root = os.path.join(folder,newFileName[0]+".csv")
     df.to_csv(root,index=False)
