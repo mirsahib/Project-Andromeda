@@ -10,10 +10,11 @@ import os
 import glob
 import pandas as pd
 
-mydir = os.chdir("/home/mirsahib/Desktop/Project-Andromeda/Dataset/2nd_Level_Feature_Extracted")
+mydir = os.chdir(r"C:\Users\Mir Sahib\Desktop\Project-Andromeda\Dataset\demo")
 extension = "csv"
 all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
 #combine all files in the list
 combined_csv = pd.concat([pd.read_csv(f) for f in all_filenames ])
 #export to csv
 combined_csv.to_csv( "combined_csv.csv", index=False, encoding='utf-8-sig')
+print("success")

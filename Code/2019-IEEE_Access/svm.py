@@ -8,8 +8,11 @@ from sklearn.metrics import accuracy_score
 from sklearn.utils import shuffle
 from sklearn import tree
 from sklearn import metrics
+from sklearn import datasets
+#linux
+#path = r"/home/mirsahib/Desktop/Project-Andromeda/Dataset/1st_Level_Feature_Extracted/mega.csv"
 
-path = r"/home/mirsahib/Desktop/Project-Andromeda/Dataset/1st_Level_Feature_Extracted/mega.csv"
+path = r"C:\Users\Mir Sahib\Desktop/Project-Andromeda/Dataset/demo/combined_csv.csv"
 
 df = pd.read_csv(path)
 col = df.shape[1]
@@ -19,7 +22,7 @@ Y = df.values[:,-1]
 
 """## SVM Linear with penalty parameter = 1"""
 
-kfold = KFold(10, True, 1)
+kfold = KFold(2, True, 1)
 acc_score = []
 count=1
 for train_index, test_index in kfold.split(df):
@@ -36,7 +39,7 @@ print("Average Accuracy: "+str(sum(acc_score)/10))
 
 """## SVM Polynomial"""
 
-kfold = KFold(10, True, 1)
+kfold = KFold(2, True, 1)
 acc_score = []
 count=1
 for train_index, test_index in kfold.split(df):
@@ -53,7 +56,7 @@ print("Average Accuracy: "+str(sum(acc_score)/10))
 
 """# SVM RBF"""
 
-kfold = KFold(10, True, 1)
+kfold = KFold(2, True, 1)
 acc_score = []
 count=1
 for train_index, test_index in kfold.split(df):
