@@ -15,7 +15,7 @@ fileName = [f for f in listdir(path) if isfile(join(path, f))]
 for i in range(0,len(fileName)):
     subject = int(re.findall(r'\d+', fileName[i])[1])
     instance = int(re.findall(r'\d+', fileName[i])[2])
-    if subject<5 and instance%2==0:
+    if  instance%2==0:
         newPath = shutil.copy(path+"\\"+fileName[i], newpath)
         print(fileName[i]+" path "+newPath)
     
