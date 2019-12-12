@@ -10,12 +10,11 @@ Original file is located at
 import csv
 import numpy as np 
 from scipy.spatial.distance import pdist
-from google.colab import drive
-drive.mount('/content/drive')
+
 
 raw_2d=[]
 frame_count=0
-with open ('/content/drive/My Drive/Colab Notebooks/a01_s01_e01_skeleton.csv','r') as csv_file:
+with open (r'C:\Users\Mir Sahib\Desktop\Project-Andromeda\Dataset\MSRAction3D_Skeleton_Joint_Extracted/a01_s01_e01_skeleton.csv','r') as csv_file:
     csv_reader=csv.reader(csv_file)
     for line in csv_reader:
         raw_2d.append(line)
