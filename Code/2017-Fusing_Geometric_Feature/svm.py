@@ -20,7 +20,7 @@ from sklearn import datasets
 #linux
 #path = r"/home/mirsahib/Desktop/Project-Andromeda/Dataset/1st_Level_Feature_Extracted/mega.csv"
 
-path = r"C:\Users\Mir Sahib\Desktop\Project-Andromeda\Dataset\Fusing_Geometric_Feature_Extracted\combined_csv.csv"
+path = r"C:\Users\Mir Sahib\Desktop\Project-Andromeda\Dataset\Fusing_Geometric_Feature_Extracted\combined_csv.csv" # change this path to "your download folder \Project-Andromeda\Dataset\Fusing_Geometric_Feature_Extracted\combined_csv.csv"
 
 df = pd.read_csv(path)
 df = df.fillna(df.mean())
