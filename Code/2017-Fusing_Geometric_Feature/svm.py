@@ -51,6 +51,7 @@ for train_index, test_index in kfold.split(df):
 
 print("Average Accuracy: "+str(sum(acc_score)/10))
 
+'''
 kfold = KFold(fold, True, 1)
 acc_score = []
 count=1
@@ -86,4 +87,4 @@ for train_index, test_index in kfold.split(df):
   count = count+1
 
 print("Average Accuracy: "+str(sum(acc_score)/10))
-
+'''

@@ -28,25 +28,35 @@ for k in range(0,len(fileName)):
     for q in range(0,20):
         matrix[q] = content[:,c:c+3]
         c=c+3
+        
+        # J1 and J2 directly adjacent in the kinectic chain
+    lines = np.array([[1,2],[2,3],[3,4],[3,5],[5,6],[6,7],[7,8],[3,9],[9,10],
+        [10,11],[11,12],[1,13],[13,14],[14,15],[15,16],[1,17],[17,18],[18,19],[19,20]])
+
+    # J1 is end site, J2 is two steps away
+    lines = np.append(lines,[[4,2],[5,7],[9,11],[13,15],[17,19]],axis=0)
+
     # Both J1 and J2 are end site
-    line_endSite = np.array([[19,9],[19,10],[19,15],[19,16],[9,10],[9,15],[9,16],[10,15],[10,16],[15,16]],np.int8)
-    
+    lines = np.append(lines, [[4,7],[4,11],[4,15],[4,19],[7,11],
+        [7,15],[7,19],[12,15],[12,19],[15,19]], axis=0)
+    lines = lines - 1
+    numOfLine = lines.shape[0]
     #1st feature distance between J1 and J2 are end site
     jj_distance_raw=np.array([])
-    for i in range(10):
+    for i in range(numOfLine):
         for j in range(frame_rate):
             s = []
-            s.append(matrix[line_endSite[i][0]][j])
-            s.append(matrix[line_endSite[i][1]][j])
+            s.append(matrix[lines[i][0]][j])
+            s.append(matrix[lines[i][1]][j])
             jj_distance_raw=np.append(jj_distance_raw,pdist(s))
-    jj_distance=np.reshape(jj_distance_raw,(frame_rate,10))
+    jj_distance=np.reshape(jj_distance_raw,(frame_rate,numOfLine))
     
     #2nd freature jj_orientation
-    jj_orientation=np.zeros((frame_rate,30))
-    for i in range(10):
+    jj_orientation=np.zeros((frame_rate,3*numOfLine))
+    for i in range(lines.shape[0]):
         jj_orientation_raw = np.array([])
         for j in range(frame_rate):
-            jj_diff = matrix[line_endSite[i][0]][j]-matrix[line_endSite[i][1]][j]
+            jj_diff = matrix[lines[i][0]][j]-matrix[lines[i][1]][j]
             jj_norm = LA.norm(jj_diff)
             #jj_orientation_raw=np.append(jj_orientation_raw,(jj_diff/jj_norm))
             try:
@@ -79,20 +89,16 @@ for k in range(0,len(fileName)):
             dis_c=pdist(c)
             
             #height using heron's formulae
-            #h=np.sqrt(np.square(dis_a)-np.square((np.square(dis_c)+np.square(dis_a)-np.square(dis_b))/(2*dis_c)))
-            try:
-                h=np.sqrt(np.square(dis_a)-np.square((np.square(dis_c)+np.square(dis_a)-np.square(dis_b))/(2*dis_c)))
-            except warnings:
-                h=0
-            jl_distance[j][i] = h
+            h=np.sqrt(np.square(dis_a)-np.square((np.square(dis_c)+np.square(dis_a)-np.square(dis_b))/(2*dis_c)))
+            jl_distance[j][i] = np.nan_to_num(h)
     
     jj_d_col_name = []
     jj_o_col_name = []
-    for i in range(10):
-        jj_d_col_name.append("JJ_d: L"+str(line_endSite[i][0])+"_L"+str(line_endSite[i][1]))
-        jj_o_col_name.append("JJ_o: L"+str(line_endSite[i][0])+"_L"+str(line_endSite[i][1])+" X")
-        jj_o_col_name.append("JJ_o: L"+str(line_endSite[i][0])+"_L"+str(line_endSite[i][1])+" Y")
-        jj_o_col_name.append("JJ_o: L"+str(line_endSite[i][0])+"_L"+str(line_endSite[i][1])+" Z")
+    for i in range(numOfLine):
+        jj_d_col_name.append("JJ_d: L"+str(lines[i][0])+"_L"+str(lines[i][1]))
+        jj_o_col_name.append("JJ_o: L"+str(lines[i][0])+"_L"+str(lines[i][1])+" X")
+        jj_o_col_name.append("JJ_o: L"+str(lines[i][0])+"_L"+str(lines[i][1])+" Y")
+        jj_o_col_name.append("JJ_o: L"+str(lines[i][0])+"_L"+str(lines[i][1])+" Z")
     
     jl_d_col_name = []
     for i in range(5):

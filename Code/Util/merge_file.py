@@ -10,7 +10,7 @@ import os
 import glob
 import pandas as pd
 
-mydir = os.chdir(r"C:\Users\Mir Sahib\Desktop\Project-Andromeda\Dataset\Fusing_Geometric_Feature")
+mydir = os.chdir(r"C:\Users\Mir Sahib\Desktop\Project-Andromeda\Dataset\Fusing_Geometric_Feature_Extracted")
 extension = "csv"
 all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
 #combine all files in the list
