@@ -51,7 +51,7 @@ for k in range(0,len(fileName)):
             #jj_orientation_raw=np.append(jj_orientation_raw,(jj_diff/jj_norm))
             try:
                 jj_orientation_raw=np.append(jj_orientation_raw,(jj_diff/jj_norm))
-            except Warning:
+            except warnings:
                 jj_orientation_raw=np.append(jj_orientation_raw,(0,0,0))
 
         jj_orientation[:,i*3:(i*3)+3] = np.reshape(jj_orientation_raw,(frame_rate,3))
@@ -82,7 +82,7 @@ for k in range(0,len(fileName)):
             #h=np.sqrt(np.square(dis_a)-np.square((np.square(dis_c)+np.square(dis_a)-np.square(dis_b))/(2*dis_c)))
             try:
                 h=np.sqrt(np.square(dis_a)-np.square((np.square(dis_c)+np.square(dis_a)-np.square(dis_b))/(2*dis_c)))
-            except Warning:
+            except warnings:
                 h=0
             jl_distance[j][i] = h
     
