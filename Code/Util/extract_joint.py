@@ -9,12 +9,14 @@ import pandas as pd
 import os
 from os import listdir
 from os.path import isfile, join
-
+import re
+#mypath = r'C:\Users\Mir Sahib\Downloads\MSRAction3DSkeleton(20joints)' # change this with your system path
 def extractJoint():
-    mypath = r'C:\Users\Mir Sahib\Downloads\MSRAction3DSkeleton(20joints)' # change this with your system path
+    mypath = r'/home/mirsahib/Desktop/Project-Andromeda/Dataset/MSRAction3DSkeleton(20joints)'
     filename = [f for f in listdir(mypath) if isfile(join(mypath, f))] # load all file name from dataset directory
     for i in range(0,len(filename)):
-        content = np.loadtxt(filename[i])#load file content
+        content = np.loadtxt(mypath+'/'+filename[i])#load file content
+        label =int( re.findall(r'\d+', filename[i])[0]) #extract label from file name
         l = int(content.shape[0]/20) # store frame rate
         matrix = np.reshape(content,(20,l,4),order = "F") # reshape dataset (20: joint, l: frame rate,4: xyz coordinated and confidence score )
         X = matrix[:,:,0]
@@ -51,7 +53,7 @@ def extractJoint():
         right_ankle = np.column_stack((X[16,:],Y[16,:],Z[16,:]))
         right_foot = np.column_stack((X[18,:],Y[18,:],Z[18,:]))
         
-        df = pd.DataFrame({'left_shoulder_X':left_shoulder[:,0],'left_shoulder_Y':left_shoulder[:,1],'left_shoulder_Z':left_shoulder[:,2],
+        skeletonDF = pd.DataFrame({'left_shoulder_X':left_shoulder[:,0],'left_shoulder_Y':left_shoulder[:,1],'left_shoulder_Z':left_shoulder[:,2],
                            'left_elbow_X':left_elbow[:,0],'left_elbow_Y':left_elbow[:,1],'left_elbow_Z':left_elbow[:,2],
                            'left_wrist_X':left_wrist[:,0],'left_wrist_Y':left_wrist[:,1],'left_wrist_Z':left_wrist[:,2],
                            'left_hand_X':left_hand[:,0],'left_hand_Y':left_hand[:,1],'left_hand_Z':left_hand[:,2],        
@@ -72,8 +74,9 @@ def extractJoint():
                            'right_ankle_X':right_ankle[:,0],'right_ankle_Y':right_ankle[:,1],'right_ankle_Z':right_ankle[:,2],
                            'right_foot_X':right_foot[:,0],'right_foot_Y':right_foot[:,1],'right_foot_Z':right_foot[:,2]
                            })
-        
-        root = r"C:\Users\Mir Sahib\Downloads\MSRSkeletonExtracted" #change this with you desired system path
+        df_label = pd.DataFrame(np.full([l,1],label),columns=["label"])
+        df = pd.concat([skeletonDF,df_label],axis=1)
+        root = r'/home/mirsahib/Desktop/Project-Andromeda/Dataset/MSRAction3DSkeletonExtracted_With_Label' #change this with you desired system path
         newfilename = filename[i].split(".")
         final_path = os.path.join(root,newfilename[0]+".csv")
         df.to_csv(final_path,index=False)

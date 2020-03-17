@@ -41,7 +41,11 @@ for k in range(0,len(fileName)):
         [7,15],[7,19],[12,15],[12,19],[15,19]], axis=0)
     lines = lines - 1
     numOfLine = lines.shape[0]
-    #1st feature distance between J1 and J2 are end site
+    
+    #1st feature joint coordinated
+    joints = np.array([matrix[19],matrix[0],matrix[1],matrix[2],matrix[8],matrix[7],matrix[3],matrix[11],matrix[12],matrix[5],matrix[4],matrix[6],matrix[13],matrix[14],matrix[17],matrix[18]])
+    
+    #2nd feature distance between J1 and J2
     jj_distance_raw=np.array([])
     for i in range(numOfLine):
         for j in range(frame_rate):
@@ -51,7 +55,7 @@ for k in range(0,len(fileName)):
             jj_distance_raw=np.append(jj_distance_raw,pdist(s))
     jj_distance=np.reshape(jj_distance_raw,(frame_rate,numOfLine))
     
-    #2nd freature jj_orientation
+    #3rd freature jj_orientation
     jj_orientation=np.zeros((frame_rate,3*numOfLine))
     for i in range(lines.shape[0]):
         jj_orientation_raw = np.array([])
@@ -66,10 +70,10 @@ for k in range(0,len(fileName)):
 
         jj_orientation[:,i*3:(i*3)+3] = np.reshape(jj_orientation_raw,(frame_rate,3))
   
-    #3rd feature joint line distance
+    #4th feature joint line distance
     plane_joint=np.array([[0,7,9],[1,8,10],[19,2,3],[4,13,15],[5,14,16]])
     jl_distance=np.zeros((frame_rate,5))
-    ll_angle=np.array([])
+    ll_angle=np.zeros([frame_rate,5,3])
     for i in range(5):
         for j in range(frame_rate):
             a=np.array(matrix[plane_joint[i][0]][j])
@@ -91,34 +95,56 @@ for k in range(0,len(fileName)):
             #height using heron's formulae
             h=np.sqrt(np.square(dis_a)-np.square((np.square(dis_c)+np.square(dis_a)-np.square(dis_b))/(2*dis_c)))
             jl_distance[j][i] = np.nan_to_num(h)
+            
+            #5th feature line line angle
+            p1 = np.array(matrix[plane_joint[i][0]][j])
+            p2 = np.array(matrix[plane_joint[i][1]][j])
+            p3 = np.array(matrix[plane_joint[i][2]][j])
+            angle_1 = np.dot(p1,p2)/(LA.norm(p1)*LA.norm(p2))
+            angle_2 = np.dot(p1,p3)/(LA.norm(p1)*LA.norm(p3))
+            angle_3 = np.dot(p2,p3)/(LA.norm(p2)*LA.norm(p3))
+            angle_1 = np.arccos(np.clip(angle_1, -1, 1))
+            angle_2 = np.arccos(np.clip(angle_2, -1, 1))
+            angle_3 = np.arccos(np.clip(angle_3, -1, 1))
+            ll_angle[j][i] = np.array([angle_1,angle_2,angle_3])
+    print('hello')
     
-    jj_d_col_name = []
-    jj_o_col_name = []
-    for i in range(numOfLine):
-        jj_d_col_name.append("JJ_d: L"+str(lines[i][0])+"_L"+str(lines[i][1]))
-        jj_o_col_name.append("JJ_o: L"+str(lines[i][0])+"_L"+str(lines[i][1])+" X")
-        jj_o_col_name.append("JJ_o: L"+str(lines[i][0])+"_L"+str(lines[i][1])+" Y")
-        jj_o_col_name.append("JJ_o: L"+str(lines[i][0])+"_L"+str(lines[i][1])+" Z")
+                
+
+
     
-    jl_d_col_name = []
-    for i in range(5):
-        jl_d_col_name.append("JL_d: p"+str(plane_joint[i][0])+"_p"+str(plane_joint[i][1])+"_p"+str(plane_joint[i][2]))
-        
-        
-        
-    #create dataframe
-    df_jj_d = pd.DataFrame(jj_distance,columns = jj_d_col_name)
-    df_jj_o = pd.DataFrame(jj_orientation,columns = jj_o_col_name)
-    df_jl_d = pd.DataFrame(jl_distance,columns = jl_d_col_name)
-    df_label = pd.DataFrame(np.full([frame_rate,1],label),columns=["label"])
+# =============================================================================
+#     #dataframe column header
+#     jj_d_col_name = []
+#     jj_o_col_name = []
+#     for i in range(numOfLine):
+#         jj_d_col_name.append("JJ_d: L"+str(lines[i][0])+"_L"+str(lines[i][1]))
+#         jj_o_col_name.append("JJ_o: L"+str(lines[i][0])+"_L"+str(lines[i][1])+" X")
+#         jj_o_col_name.append("JJ_o: L"+str(lines[i][0])+"_L"+str(lines[i][1])+" Y")
+#         jj_o_col_name.append("JJ_o: L"+str(lines[i][0])+"_L"+str(lines[i][1])+" Z")
+#     
+#     jl_d_col_name = []
+#     for i in range(5):
+#         jl_d_col_name.append("JL_d: p"+str(plane_joint[i][0])+"_p"+str(plane_joint[i][1])+"_p"+str(plane_joint[i][2]))
+#         
+#         
+#         
+#     #create dataframe
+#     df_jj_d = pd.DataFrame(jj_distance,columns = jj_d_col_name)
+#     df_jj_o = pd.DataFrame(jj_orientation,columns = jj_o_col_name)
+#     df_jl_d = pd.DataFrame(jl_distance,columns = jl_d_col_name)
+#     df_label = pd.DataFrame(np.full([frame_rate,1],label),columns=["label"])
+#     
+#     df = pd.concat([df_jj_d,df_jj_o,df_jl_d,df_label],axis=1)
+#     
+#     folder = r'C:\Users\Mir Sahib\Desktop\Project-Andromeda\Dataset\Fusing_Geometric_Feature_Extracted' #change this with your system path
+#     root = join(folder,fileName[k])
+#     df.to_csv(root,index=False)
+#     print(fileName[k]+" success")
+#     
+# =============================================================================
     
-    df = pd.concat([df_jj_d,df_jj_o,df_jl_d,df_label],axis=1)
-    
-    folder = r'C:\Users\Mir Sahib\Desktop\Project-Andromeda\Dataset\Fusing_Geometric_Feature_Extracted' #change this with your system path
-    root = join(folder,fileName[k])
-    df.to_csv(root,index=False)
-    print(fileName[k]+" success")
-    
+
     
             
             
